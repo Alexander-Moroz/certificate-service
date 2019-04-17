@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'war'
+}
+
+group 'com.amoroz'
+version '0.0.1'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    //spring
+    compile("org.springframework:spring-webmvc:5.1.6.RELEASE")
+    //javax servlet
+    compile("javax.servlet:javax.servlet-api:4.0.1")
+    //TODO jackson
+    compile("com.fasterxml.jackson.core:jackson-databind:2.9.8")
+    compile("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.8")
+    //TODO database
+    //TODO hibernate validation
+    //TODO messaging
+    //logging
+    compile("org.apache.logging.log4j:log4j-web:2.11.2")
+
+    //tests
+    testCompile("org.junit.jupiter:junit-jupiter:5.4.1")
+}
+
+task explodedWar(type: Sync) {
+    into "${buildDir}/libs/exploded/certificate-service-0.0.1.war"
+    with war
+}
