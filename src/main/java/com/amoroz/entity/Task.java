@@ -4,6 +4,8 @@ import com.amoroz.entity.validation.ValidateTaskData;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -53,9 +55,11 @@ public class Task implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private Date createDate;
 
-    @Column(name = "status_id")
+//    @Column(name = "status_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id", nullable = false)
     @JsonIgnore
-    private int status;
+    private Status status;
 
     public Long getId() {
         return id;
@@ -121,11 +125,11 @@ public class Task implements Serializable {
         this.createDate = createDate;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public Status getStatus() {
+        return status;
     }
 
-    public int getStatus() {
-        return status;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

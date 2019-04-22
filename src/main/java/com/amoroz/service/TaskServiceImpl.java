@@ -1,7 +1,8 @@
 package com.amoroz.service;
 
+import com.amoroz.entity.Status;
 import com.amoroz.entity.Task;
-import com.amoroz.model.TaskStatus;
+import com.amoroz.repository.StatusRepository;
 import com.amoroz.repository.TaskRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,12 +24,14 @@ public class TaskServiceImpl implements TaskService {
     private static final Logger LOGGER = LogManager.getLogger(TaskServiceImpl.class);
 
     private final TaskRepository taskRepository;
+    private final StatusRepository statusRepository;
     private final NotificationService notificationService;
     private final JmsTemplate jmsTemplate;
 
     @Autowired
-    public TaskServiceImpl(TaskRepository taskRepository, NotificationService notificationService, JmsTemplate jmsTemplate) {
+    public TaskServiceImpl(TaskRepository taskRepository, StatusRepository statusRepository, NotificationService notificationService, JmsTemplate jmsTemplate) {
         this.taskRepository = taskRepository;
+        this.statusRepository = statusRepository;
         this.notificationService = notificationService;
         this.jmsTemplate = jmsTemplate;
     }
@@ -36,10 +39,16 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public CompletableFuture<String> createTaskAndGetId(Task task) {
         task.setCreateDate(new Date(System.currentTimeMillis()));
-        task.setStatus(1);
-        taskRepository.save(task);
-        notificationService.notifyClient(task);
-        return CompletableFuture.completedFuture(task.getId().toString());
+        Optional<Status> optionalStatus = statusRepository.findById(1);
+        if (optionalStatus.isPresent()) {
+            task.setStatus(optionalStatus.get());
+            taskRepository.save(task);
+            notificationService.notifyClient(task);
+            return CompletableFuture.completedFuture(task.getId().toString());
+        } else {
+            LOGGER.error("ERROR processing task request: {}", task);
+            return CompletableFuture.completedFuture("Can't process request. Try again.");
+        }
     }
 
     @Override
@@ -47,7 +56,7 @@ public class TaskServiceImpl implements TaskService {
         Optional<Task> optionalTask = taskRepository.findById(taskId);
         LOGGER.debug("getTaskStatus taskId: {}", taskId);
         if (optionalTask.isPresent()) {
-            return TaskStatus.getStatus(optionalTask.get().getStatus()).name();
+            return optionalTask.get().getStatus().getName();
         }
         return null;
     }
@@ -62,7 +71,8 @@ public class TaskServiceImpl implements TaskService {
     public String getBase64Cert(Long taskId) throws JsonProcessingException {
         Optional<Task> taskOptional = getTask(taskId);
         LOGGER.debug("getBase64Cert taskId: {}", taskId);
-        if (taskOptional.isPresent() && TaskStatus.getStatus(taskOptional.get().getStatus()) == TaskStatus.CLOSED) {
+        //TODO status magic numbers
+        if (taskOptional.isPresent() && taskOptional.get().getStatus().getStatus() == 4) {
             return encodeBase64(new ObjectMapper().writeValueAsString(taskOptional.get()));
         }
         return null;

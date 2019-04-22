@@ -1,7 +1,6 @@
 package com.amoroz.service;
 
 import com.amoroz.entity.Task;
-import com.amoroz.model.TaskStatus;
 import com.amoroz.notification.Email;
 import com.amoroz.notification.Sms;
 import org.apache.logging.log4j.LogManager;
@@ -30,7 +29,7 @@ public class NotificationService {
 
     @Async
     public void notifyClient(Task task) {
-        String message = String.format("Task id: %d status: %s", task.getId(), TaskStatus.getStatus(task.getStatus()));
+        String message = String.format("Task id: %d status: %s", task.getId(), task.getStatus().getName());
         if (task.getEmail() != null) {
             jmsTemplate.convertAndSend("allMessagesQueue", new Email(task.getEmail(), message), m -> {
                 m.setStringProperty("key", "email");

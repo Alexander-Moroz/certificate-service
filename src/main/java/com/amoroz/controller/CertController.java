@@ -1,7 +1,6 @@
 package com.amoroz.controller;
 
 import com.amoroz.entity.Task;
-import com.amoroz.model.TaskStatus;
 import com.amoroz.service.TaskService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +33,8 @@ public class CertController {
     public ResponseEntity<String> getCert(@RequestParam("id") Long taskId, HttpServletResponse response) throws IOException {
         LOGGER.debug("getCert id: {}", taskId);
         Optional<Task> taskOptional = taskService.getTask(taskId);
-        if (taskOptional.isPresent() && TaskStatus.getStatus(taskOptional.get().getStatus()) == TaskStatus.CLOSED) {
+        //TODO status magic numbers
+        if (taskOptional.isPresent() && taskOptional.get().getStatus().getStatus() == 4) {
             String base64Cert = taskService.getBase64Cert(taskId);
             if (base64Cert != null) {
                 return new ResponseEntity<>(base64Cert, HttpStatus.OK);
