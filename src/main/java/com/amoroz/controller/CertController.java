@@ -1,6 +1,7 @@
 package com.amoroz.controller;
 
 import com.amoroz.entity.Task;
+import com.amoroz.service.StatusService;
 import com.amoroz.service.TaskService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,18 +24,19 @@ public class CertController {
     private static final Logger LOGGER = LogManager.getLogger(CertController.class);
 
     private final TaskService taskService;
+    private final StatusService statusService;
 
     @Autowired
-    public CertController(TaskService taskService) {
+    public CertController(TaskService taskService, StatusService statusService) {
         this.taskService = taskService;
+        this.statusService = statusService;
     }
 
     @GetMapping
     public ResponseEntity<String> getCert(@RequestParam("id") Long taskId, HttpServletResponse response) throws IOException {
         LOGGER.debug("getCert id: {}", taskId);
         Optional<Task> taskOptional = taskService.getTask(taskId);
-        //TODO status magic numbers
-        if (taskOptional.isPresent() && taskOptional.get().getStatus().getStatus() == 4) {
+        if (taskOptional.isPresent() && taskOptional.get().getStatus().equals(statusService.getStatusByName("CLOSED"))) {
             String base64Cert = taskService.getBase64Cert(taskId);
             if (base64Cert != null) {
                 return new ResponseEntity<>(base64Cert, HttpStatus.OK);
@@ -46,6 +48,5 @@ public class CertController {
         LOGGER.warn(String.format("Cert is not ready. taskId: %d", taskId));
         response.sendRedirect("/task?id=" + taskId);
         return null;
-        //return new ResponseEntity<>(String.format("CERTIFICATE WITH ID: %s IS NOT READY YET", taskId), HttpStatus.BAD_REQUEST);
     }
 }

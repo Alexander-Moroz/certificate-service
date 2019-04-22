@@ -37,6 +37,21 @@ public class JmsConfig {
     }
 
     @Bean
+    public ActiveMQQueue createdTasksQueue() {
+        return new ActiveMQQueue("createdTasksQueue");
+    }
+
+    @Bean
+    public ActiveMQQueue inProgressTasksQueue() {
+        return new ActiveMQQueue("inProgressTasksQueue");
+    }
+
+    @Bean
+    public ActiveMQQueue unprocessedTasksQueue() {
+        return new ActiveMQQueue("unprocessedTasksQueue");
+    }
+
+    @Bean
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory container = new DefaultJmsListenerContainerFactory();
         container.setConnectionFactory(connectionFactory);

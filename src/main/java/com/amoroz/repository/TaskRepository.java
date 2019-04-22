@@ -10,5 +10,4 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends CrudRepository<Task, Long> {
     Optional<Task> findFirstByStatus(Status status);
-//    Optional<Task> findFirstByStatus(int statusId);
 }

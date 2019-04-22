@@ -49,9 +49,16 @@ public class TaskController {
                         , HttpStatus.BAD_REQUEST);
         }
         CompletableFuture<String> futureId = taskService.createTaskAndGetId(task);
-        String responseMessage = String.format("Заявка принята. Идентификатор заявки %s", futureId.join());
-        LOGGER.info(responseMessage);
-        return new ResponseEntity(responseMessage, HttpStatus.OK);
+        String message = futureId.join();
+        if (message.matches("\\d+")) {
+            String responseMessage = String.format("Заявка принята. Идентификатор заявки %s", message);
+            LOGGER.info(responseMessage);
+            return new ResponseEntity(responseMessage, HttpStatus.OK);
+        } else {
+            String responseMessage = String.format("Ошибка заявки %s", message);
+            LOGGER.error("ERROR. task: {}, message: {}", task, responseMessage);
+            return new ResponseEntity(responseMessage, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping

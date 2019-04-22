@@ -1,5 +1,6 @@
 package com.amoroz.config;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.annotation.EnableJms;
@@ -11,12 +12,13 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @PropertySources(
         @PropertySource("classpath:/hibernate.properties")
 )
-@Import({DBConfig.class, JPAConfig.class, WebMvcConfig.class, JmsConfig.class})
+@Import({DBConfig.class, JPAConfig.class, WebMvcConfig.class, JmsConfig.class, CacheConfig.class})
 @ComponentScan("com.amoroz")
 @EnableWebMvc
 @EnableJpaRepositories("com.amoroz.repository")
 @EnableJms
 @EnableScheduling
 @EnableAsync
+@EnableCaching
 public class MainConfig {
 }
