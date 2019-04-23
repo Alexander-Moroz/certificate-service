@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name="task_status")
@@ -35,5 +36,19 @@ public class Status implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Status status1 = (Status) o;
+        return status == status1.status &&
+                Objects.equals(name, status1.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(status, name);
     }
 }

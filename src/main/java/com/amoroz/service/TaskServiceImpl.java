@@ -87,6 +87,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Scheduled(fixedRate = 60000L)
     @CacheEvict(cacheNames = {"base64cert"})
+    @Override
     public void clearBase64certCache() {
         LOGGER.debug("CLEAR base64cert cache");
     }

@@ -38,8 +38,6 @@ dependencies {
     //hibernate
     compile("org.hibernate:hibernate-validator:6.0.16.Final")
     compile("org.hibernate:hibernate-entitymanager:5.4.2.Final")
-    //quartz
-//    compile("org.quartz-scheduler:quartz:2.3.1")
     //activemq
     compile("org.apache.activemq:activemq-broker:5.15.9")
     compile("org.apache.activemq:activemq-stomp:5.15.9")
